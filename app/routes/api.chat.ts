@@ -31,17 +31,17 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         messages.push({ role: 'assistant', content });
         messages.push({ role: 'user', content: CONTINUE_PROMPT });
         console.log("selectedModel", selectedModel);
-        const result = selectedModel === 'openai'
-          ? await streamTextOpenAI(messages, context.cloudflare.env, selectedModel, options)
-          : await streamText(messages, context.cloudflare.env, options);
+        const result = selectedModel === 'claude'
+          ? await streamText(messages, context.cloudflare.env as Env, options)
+          : await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options);
 
         return stream.switchSource(result.toAIStream());
       },
     };
 
-    const result = selectedModel === 'openai'
-      ? await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options)
-      : await streamText(messages, context.cloudflare.env as Env, options);
+    const result = selectedModel === 'claude'
+        ? await streamText(messages, context.cloudflare.env as Env, options)
+        : await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options);
 
     stream.switchSource(result.toAIStream());
 
