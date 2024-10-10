@@ -1,0 +1,22 @@
+[
+    {
+        "provider": "anthropic",
+        "model": "claude",
+        "capt": "Claude 3.5"
+    },
+    {
+        "provider": "openai",
+        "model": "gpt-4o",
+        "capt": "OpenAI GPT-4o"
+    },
+    {
+        "provider": "ollama",
+        "model": "deepseek-coder-v2:16b",
+        "capt": "deepseek-coder-v2"
+    },
+    {
+        "provider": "ollama",
+        "model": "7shi/ezo-gemma-2-jpn:2b-instruct-q8_0",
+        "capt": "ezo-gemma-2-jpn"
+    }
+]

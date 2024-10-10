@@ -10,6 +10,8 @@ import { SendButton } from './SendButton.client';
 
 import styles from './BaseChat.module.scss';
 
+import llms from '~/llms.json';
+
 interface BaseChatProps {
   textareaRef?: React.RefObject<HTMLTextAreaElement> | undefined;
   messageRef?: RefCallback<HTMLDivElement> | undefined;
@@ -97,11 +99,11 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   onChange={(e) => setSelectedModel(e.target.value)}
                   className="p-0.5 border rounded bg-black text-white text-sm"
                 >
-                  <option value="claude">Claude 3.5</option>
-                  <option value="gpt-4o">OpenAI GPT-4o</option>
-                  <option value="o1-preview">OpenAI o1-preview</option>
-                  <option value="o1-mini">OpenAI o1-mini</option>
-                  <option value="gemini" disabled>gemini-pro(not implemented)</option>
+                {llms.map((llm) => (
+                  <option key={llm.model} value={llm.model}>
+                    {llm.capt}
+                  </option>
+                ))}
                 </select>
               </div>
               <ClientOnly>

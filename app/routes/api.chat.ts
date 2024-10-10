@@ -1,8 +1,9 @@
 import { type ActionFunctionArgs } from '@remix-run/cloudflare';
 import { MAX_RESPONSE_SEGMENTS, MAX_TOKENS } from '~/lib/.server/llm/constants';
 import { CONTINUE_PROMPT } from '~/lib/.server/llm/prompts';
-import { streamText, streamTextOpenAI, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
+import { streamText, streamTextOpenAI, streamTextOllama, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
 import SwitchableStream from '~/lib/.server/llm/switchable-stream';
+import llms from '~/llms.json'; 
 
 export async function action(args: ActionFunctionArgs) {
   return chatAction(args);
@@ -11,6 +12,15 @@ export async function action(args: ActionFunctionArgs) {
 async function chatAction({ context, request }: ActionFunctionArgs) {
   let { messages, selectedModel } = await request.json<{ messages: Messages, selectedModel: string }>();
   console.log("selectedModel", selectedModel);
+
+  // Find the provider for the selectedModel
+  const modelInfo = llms.find((model) => model.model === selectedModel);
+  if (!modelInfo) {
+    throw new Response("Model not found", { status: 404 });
+  }
+  const { provider } = modelInfo;
+  console.log("provider", provider);
+
   const stream = new SwitchableStream();
 
   try {
@@ -31,17 +41,26 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         messages.push({ role: 'assistant', content });
         messages.push({ role: 'user', content: CONTINUE_PROMPT });
         console.log("selectedModel", selectedModel);
-        const result = selectedModel === 'claude'
-          ? await streamText(messages, context.cloudflare.env as Env, options)
-          : await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options);
-
+        const result = 
+          provider === 'anthropic'
+            ? await streamText(messages, context.cloudflare.env as Env, options)
+            : provider === 'openai'
+            ? await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options)
+            : provider === 'ollama'
+            ? await streamTextOllama(messages, context.cloudflare.env as Env, selectedModel,options)
+            : null;
         return stream.switchSource(result.toAIStream());
       },
     };
 
-    const result = selectedModel === 'claude'
-        ? await streamText(messages, context.cloudflare.env as Env, options)
-        : await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options);
+    const result =
+      provider === 'anthropic'
+          ? await streamText(messages, context.cloudflare.env as Env, options)
+          : provider === 'openai'
+          ? await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options)
+          : provider === 'ollama'
+          ? await streamTextOllama(messages, context.cloudflare.env as Env, selectedModel, options)
+          : null;
 
     stream.switchSource(result.toAIStream());
 

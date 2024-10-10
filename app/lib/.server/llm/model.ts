@@ -1,5 +1,6 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
+import { createOllama } from 'ollama-ai-provider';
 
 export function getAnthropicModel(apiKey: string) {
   const anthropic = createAnthropic({
@@ -16,4 +17,14 @@ export function getOpenAIModel(model: string, apiKey: string) {
 
   return openai(model);
 }
+
+export function getOllamaModel(model: string, baseurl: string) {
+
+  const ollama = createOllama({
+    baseURL: baseurl,
+  });
+
+  return ollama(String(model));
+}
+
 

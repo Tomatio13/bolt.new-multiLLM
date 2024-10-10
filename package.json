@@ -14,7 +14,7 @@
     "test:watch": "vitest",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "start": "pnpm run build && powershell -Command \"$bindings = ./bindings.ps1; $command = \\\"wrangler pages dev ./build/client $bindings\\\"; echo $command; Invoke-Expression $command\"",
+    "start": "bindings=$(./bindings.sh) && wrangler pages dev ./build/client $bindings",
     "typecheck": "tsc",
     "typegen": "wrangler types",
     "preview": "pnpm run build && pnpm run start"
@@ -76,7 +76,8 @@
     "remix-island": "^0.2.0",
     "remix-utils": "^7.6.0",
     "shiki": "^1.9.1",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.0.0",
+    "ollama-ai-provider": "^0.15.1"
   },
   "devDependencies": {
     "@blitz/eslint-plugin": "0.1.0",
