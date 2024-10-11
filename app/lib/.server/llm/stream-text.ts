@@ -22,9 +22,9 @@ export type Messages = Message[];
 
 export type StreamingOptions = Omit<Parameters<typeof _streamText>[0], 'model'>;
 
-export function streamText(messages: Messages, env: Env, options?: StreamingOptions) {
+export function streamText(messages: Messages, env: Env, model: string, options?: StreamingOptions) {
   return _streamText({
-    model: getAnthropicModel(getAPIKey(env)),
+    model: getAnthropicModel(model,getAPIKey(env)),
     system: getSystemPrompt(),
     maxTokens: MAX_TOKENS,
     headers: {

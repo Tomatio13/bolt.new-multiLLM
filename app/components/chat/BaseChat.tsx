@@ -96,7 +96,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                 {/* モデル選択用のセレクトボックス */}
                 <select
                   value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
+                  onChange={(e) => setSelectedModel(e.target.value)} // 状態を変更
                   className="p-0.5 border rounded bg-black text-white text-sm"
                 >
                 {llms.map((llm) => (
@@ -105,6 +105,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   </option>
                 ))}
                 </select>
+
               </div>
               <ClientOnly>
                 {() => {

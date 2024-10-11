@@ -12,6 +12,7 @@ import { fileModificationsToHTML } from '~/utils/diff';
 import { cubicEasingFn } from '~/utils/easings';
 import { createScopedLogger, renderLogger } from '~/utils/logger';
 import { BaseChat } from './BaseChat';
+import llms from '~/llms.json'; // llms.json のインポート
 
 const toastAnimation = cssTransition({
   enter: 'animated fadeInRight',
@@ -80,7 +81,11 @@ export const ChatImpl = memo(({ initialMessages, storeMessageHistory }: ChatProp
 
   const [animationScope, animate] = useAnimate();
 
-  const [selectedModel, setSelectedModel] = useState('claude');
+  // llms.jsonから初期モデルを取得
+  const initialModel = llms.length > 0 ? llms[0].model : 'claude-3-5-sonnet-20240620';
+
+  // ChatImplコンポーネント内
+  const [selectedModel, setSelectedModel] = useState(initialModel);
 
   const { messages, isLoading, input, handleInputChange, setInput, stop, append } = useChat({
     api: '/api/chat',

@@ -16,6 +16,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
   // Find the provider for the selectedModel
   const modelInfo = llms.find((model) => model.model === selectedModel);
   if (!modelInfo) {
+    console.log("Model not found")
     throw new Response("Model not found", { status: 404 });
   }
   const { provider } = modelInfo;
@@ -43,7 +44,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         console.log("selectedModel", selectedModel);
         const result = 
           provider === 'anthropic'
-            ? await streamText(messages, context.cloudflare.env as Env, options)
+            ? await streamText(messages, context.cloudflare.env as Env, selectedModel,options)
             : provider === 'openai'
             ? await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options)
             : provider === 'ollama'
@@ -55,7 +56,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
 
     const result =
       provider === 'anthropic'
-          ? await streamText(messages, context.cloudflare.env as Env, options)
+          ? await streamText(messages, context.cloudflare.env as Env, selectedModel,options)
           : provider === 'openai'
           ? await streamTextOpenAI(messages, context.cloudflare.env as Env, selectedModel, options)
           : provider === 'ollama'
