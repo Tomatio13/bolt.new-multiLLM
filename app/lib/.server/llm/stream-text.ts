@@ -3,7 +3,6 @@ import { getAPIKey, getOpenAIAPIKey,getOllamBaseUrl } from '~/lib/.server/llm/ap
 import { getAnthropicModel, getOpenAIModel,getOllamaModel } from '~/lib/.server/llm/model';
 import { MAX_TOKENS } from './constants';
 import { getSystemPrompt } from './prompts';
-import { ollama } from 'ollama-ai-provider'
 
 interface ToolResult<Name extends string, Args, Result> {
   toolCallId: string;
@@ -47,12 +46,12 @@ export function streamTextOpenAI(messages: Messages, env: Env, model: string, op
 }
 
 export function streamTextOllama(messages: Messages, env: Env, model: string, options?: StreamingOptions) {
+  // console.log('system:' + getSystemPrompt())
+  // console.log('message: '+messages)
   return _streamText({
-    maxRetries: 5,
     model: getOllamaModel(model, getOllamBaseUrl(env)),
-    system: getSystemPrompt(),
     maxTokens: MAX_TOKENS,
-    messages: convertToCoreMessages(messages),
+    messages: [...convertToCoreMessages(messages), { role: 'system', content: getSystemPrompt() }],
     headers: {},
     ...options,
   });

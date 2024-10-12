@@ -1,7 +1,7 @@
 [
     {
         "provider": "anthropic",
-        "model": "claude",
+        "model": "claude-3-5-sonnet-20240620",
         "capt": "Claude 3.5"
     },
     {
@@ -19,4 +19,5 @@
         "model": "7shi/ezo-gemma-2-jpn:2b-instruct-q8_0",
         "capt": "ezo-gemma-2-jpn"
     }
+
 ]
