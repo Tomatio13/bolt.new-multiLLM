@@ -15,7 +15,7 @@ pnpm install
 ```.env.local
 OPENAI_API_KEY=<YOUR OPENAI API KEY>
 ANTHROPIC_API_KEY=<YOUR ANTHROPIC API KEY>
-OLLAMA_BASE_URL=http://localhost:11434/api/
+OLLAMA_BASE_URL=http://localhost:11434/v1/
 VITE_LOG_LEVEL=debug
 ```
 
@@ -24,7 +24,7 @@ VITE_LOG_LEVEL=debug
 [
     {
         "provider": "anthropic",
-        "model": "claude",
+        "model": "claude-3-5-sonnet-20240620",
         "capt": "Claude 3.5"
     },
     {
@@ -43,6 +43,7 @@ VITE_LOG_LEVEL=debug
         "capt": "ezo-gemma-2-jpn"
     }
 ]
+
 ```
 
 4. When ready, run the following command in a powershell and you are good to go!
