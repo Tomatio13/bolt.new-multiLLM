@@ -50,8 +50,9 @@ export function streamTextOllama(messages: Messages, env: Env, model: string, op
   // console.log('message: '+messages)
   return _streamText({
     model: getOllamaModel(model, getOllamBaseUrl(env)),
+    system: getSystemPrompt(),
     maxTokens: MAX_TOKENS,
-    messages: [...convertToCoreMessages(messages), { role: 'system', content: getSystemPrompt() }],
+    messages: convertToCoreMessages(messages),
     headers: {},
     ...options,
   });

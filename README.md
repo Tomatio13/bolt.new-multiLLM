@@ -34,8 +34,8 @@ VITE_LOG_LEVEL=debug
     },
     {
         "provider": "ollama",
-        "model": "deepseek-coder-v2:16b",
-        "capt": "deepseek-coder-v2"
+        "model": "qwen2.5-coder-128k",
+        "capt": "qwen2.5-coder"
     },
     {
         "provider": "ollama",
@@ -49,4 +49,20 @@ VITE_LOG_LEVEL=debug
 4. When ready, run the following command in a powershell and you are good to go!
 ```
 pnpm run start
+```
+
+**Tips: Important Points to Consider When Using Ollama**
+
+The system prompt for bolt.new consists of more than 3000 tokens. Therefore, when choosing a model, you need to select an LLM that supports Long-Context. Also, since the default value for Ollama's context window is 2048, you should modify num_ctx for proper use.
+
+Example: Changing num_ctx for qwen2.5-coder:7b
+
+1. Create a Modelfile:
+```text
+FROM qwen2.5-coder:latest
+parameter num_ctx 128000
+```
+2. Create a custom model on Ollama:
+```bash
+ollama create qwen2.5-coder-128k -f Modelfile
 ```
