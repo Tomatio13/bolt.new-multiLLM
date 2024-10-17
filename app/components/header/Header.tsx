@@ -4,9 +4,11 @@ import { chatStore } from '~/lib/stores/chat';
 import { classNames } from '~/utils/classNames';
 import { HeaderActionButtons } from './HeaderActionButtons.client';
 import { ChatDescription } from '~/lib/persistence/ChatDescription.client';
+import { selectDirectory, selectedDirectoryHandle } from '~/lib/persistence/fileSystem';
 
 export function Header() {
   const chat = useStore(chatStore);
+  const directoryHandle = useStore(selectedDirectoryHandle);
 
   return (
     <header
@@ -30,7 +32,18 @@ export function Header() {
       {chat.started && (
         <ClientOnly>
           {() => (
-            <div className="mr-1">
+            <div className="mr-1 flex items-center">
+              <button
+                onClick={selectDirectory}
+                className="mr-4 px-3 py-1 bg-bolt-elements-button-primary-background text-bolt-elements-button-primary-text rounded-md hover:bg-bolt-elements-button-primary-backgroundHover"
+              >
+                {directoryHandle ? 'Change Folder' : 'Select Folder'}
+              </button>
+              {directoryHandle && (
+                <span className="mr-4 text-bolt-elements-textSecondary">
+                  Selected: {directoryHandle.name}
+                </span>
+              )}
               <HeaderActionButtons />
             </div>
           )}

@@ -9,6 +9,7 @@ import { EditorStore } from './editor';
 import { FilesStore, type FileMap } from './files';
 import { PreviewsStore } from './previews';
 import { TerminalStore } from './terminal';
+import * as FileSystem from '~/lib/persistence/fileSystem';
 
 export interface ArtifactState {
   id: string;
@@ -44,6 +45,8 @@ export class WorkbenchStore {
       import.meta.hot.data.showWorkbench = this.showWorkbench;
       import.meta.hot.data.currentView = this.currentView;
     }
+
+    this.startFileChangeChecks();
   }
 
   get previews() {
@@ -153,6 +156,28 @@ export class WorkbenchStore {
     this.#editorStore.setSelectedFile(filePath);
   }
 
+  startFileChangeChecks(interval: number = 30000) {
+    setInterval(async () => {
+      await FileSystem.checkForFileChanges();
+      this.syncExternalChanges();
+    }, interval);
+  }
+
+  syncExternalChanges() {
+    const changes = FileSystem.fileChanges.get();
+    const documents = this.#editorStore.documents.get();
+
+    for (const [filePath, content] of changes) {
+      const fullPath = `/home/project/${filePath}`;
+
+      if (documents[fullPath] && documents[fullPath].value !== content) {
+        this.#editorStore.updateFile(fullPath, content);
+        this.#filesStore.saveFile(fullPath, content);
+        console.log(`Synced external changes for file: ${fullPath}`);
+      }
+    }
+  }
+
   async saveFile(filePath: string) {
     const documents = this.#editorStore.documents.get();
     const document = documents[filePath];
@@ -162,6 +187,17 @@ export class WorkbenchStore {
     }
 
     await this.#filesStore.saveFile(filePath, document.value);
+
+    // Update file in local folder
+    try {
+      // Remove the /home/project/ prefix if it exists
+      const localFilePath = filePath.replace(/^\/home\/project\//, '');
+      await FileSystem.updateFile(localFilePath, document.value);
+    } catch (error) {
+      console.error('Failed to update file in local folder:', error);
+
+      // You might want to show a notification to the user here
+    }
 
     const newUnsavedFiles = new Set(this.unsavedFiles.get());
     newUnsavedFiles.delete(filePath);
@@ -274,3 +310,4 @@ export class WorkbenchStore {
 }
 
 export const workbenchStore = new WorkbenchStore();
+
