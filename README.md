@@ -62,7 +62,14 @@ Example: Changing num_ctx for qwen2.5-coder:7b
 FROM qwen2.5-coder:latest
 parameter num_ctx 128000
 ```
-2. Create a custom model on Ollama:
+1. Create a custom model on Ollama:
 ```bash
 ollama create qwen2.5-coder-128k -f Modelfile
+```
+
+***
+Please grant write permissions to the selected folder.
+Example: If selecting the folder "bolt", use the following command:
+```
+chmod 777 bolt
 ```
