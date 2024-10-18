@@ -90,7 +90,6 @@ export class EditorStore {
         ...documentState,
         value: newContent,
       });
-      console.log(`Updated file in editor: ${filePath}`);
     }
   }
 }

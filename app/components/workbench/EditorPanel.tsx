@@ -122,13 +122,6 @@ export const EditorPanel = memo(
       }
     };
 
-    const handleFileSave = async () => {
-      if (editorDocument) {
-        await workbenchStore.saveFile(editorDocument.filePath);
-        onFileSave?.();
-      }
-    };
-
     return (
       <PanelGroup direction="vertical">
         <Panel defaultSize={showTerminal ? DEFAULT_EDITOR_SIZE : 100} minSize={20}>
@@ -158,7 +151,7 @@ export const EditorPanel = memo(
                     <FileBreadcrumb pathSegments={activeFileSegments} files={files} onFileSelect={onFileSelect} />
                     {activeFileUnsaved && (
                       <div className="flex gap-1 ml-auto -mr-1.5">
-                        <PanelHeaderButton onClick={handleFileSave}>
+                        <PanelHeaderButton onClick={onFileSave}>
                           <div className="i-ph:floppy-disk-duotone" />
                           Save
                         </PanelHeaderButton>
@@ -217,7 +210,7 @@ export const EditorPanel = memo(
                         {
                           'bg-bolt-elements-terminals-buttonBackground text-bolt-elements-textPrimary': isActive,
                           'bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary hover:bg-bolt-elements-terminals-buttonBackground':
-                          !isActive,
+                            !isActive,
                         },
                       )}
                       onClick={() => setActiveTerminal(index)}

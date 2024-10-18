@@ -1,7 +1,6 @@
 import type { Message } from 'ai';
 import { createScopedLogger } from '~/utils/logger';
 import type { ChatHistoryItem } from './useChatHistory';
-import * as FileSystem from './fileSystem';
 
 const logger = createScopedLogger('ChatHistory');
 
@@ -49,68 +48,25 @@ export async function setMessages(
   urlId?: string,
   description?: string,
 ): Promise<void> {
-  const chatItem: ChatHistoryItem = {
-    id,
-    messages,
-    urlId,
-    description,
-    timestamp: new Date().toISOString(),
-  };
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('chats', 'readwrite');
+    const store = transaction.objectStore('chats');
 
-  try {
-    // Save to IndexedDB
-    await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction('chats', 'readwrite');
-      const store = transaction.objectStore('chats');
-      const request = store.put(chatItem);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+    const request = store.put({
+      id,
+      messages,
+      urlId,
+      description,
+      timestamp: new Date().toISOString(),
     });
 
-    // Save to file system if a directory is selected
-    const directoryHandle = await FileSystem.getDirectoryHandle();
-    if (directoryHandle) {
-      try {
-        await FileSystem.writeBoltNewJson(id, chatItem);
-        await FileSystem.createBoltNewFile(id);
-        await FileSystem.createProjectFiles(chatItem);
-        logger.info(`Files successfully written for chat ${id}`);
-      } catch (error) {
-        logger.error(`Error writing files for chat ${id}:`, error);
-      }
-    }
-  } catch (error) {
-    logger.error('Error saving messages:', error);
-    throw error;
-  }
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
 }
 
 export async function getMessages(db: IDBDatabase, id: string): Promise<ChatHistoryItem> {
-  try {
-    // Try to get from file system first
-    const directoryHandle = await FileSystem.getDirectoryHandle();
-    if (directoryHandle) {
-      try {
-        const chatItem = await FileSystem.readBoltNewJson(id);
-        if (chatItem) {
-          await FileSystem.createProjectFiles(chatItem);
-          return chatItem;
-        }
-      } catch (error) {
-        logger.warn(`File not found in selected directory for chat ${id}, falling back to IndexedDB`);
-      }
-    }
-
-    // Fallback to IndexedDB
-    const chatItem = (await getMessagesById(db, id)) || (await getMessagesByUrlId(db, id));
-    if (chatItem && directoryHandle) {
-      await FileSystem.createProjectFiles(chatItem);
-    }
-    return chatItem;
-  } catch (error) {
-    logger.error('Error getting messages:', error);
-    throw error;
-  }
+  return (await getMessagesById(db, id)) || (await getMessagesByUrlId(db, id));
 }
 
 export async function getMessagesByUrlId(db: IDBDatabase, id: string): Promise<ChatHistoryItem> {
