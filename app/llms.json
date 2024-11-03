@@ -1,7 +1,7 @@
 [
     {
         "provider": "anthropic",
-        "model": "claude-3-5-sonnet-20240620",
+        "model": "claude-3-5-sonnet-20241022",
         "capt": "Claude 3.5"
     },
     {
@@ -11,13 +11,18 @@
     },
     {
         "provider": "ollama",
-        "model": "deepseek-coder-v2:16b",
+        "model": "deepseek-coder-v2:16b_12k",
         "capt": "deepseek-coder-v2"
     },
     {
         "provider": "ollama",
         "model": "7shi/ezo-gemma-2-jpn:2b-instruct-q8_0",
         "capt": "ezo-gemma-2-jpn"
+    },
+    {
+        "provider": "ollama",
+        "model": "7shi/tanuki-dpo-v1.0:8b-q6_K",
+        "capt": "tanuki-dpo-v1.0"
     }
 
 ]

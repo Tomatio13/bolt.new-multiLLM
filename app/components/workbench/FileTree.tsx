@@ -3,6 +3,9 @@ import type { FileMap } from '~/lib/stores/files';
 import { classNames } from '~/utils/classNames';
 import { createScopedLogger, renderLogger } from '~/utils/logger';
 
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
 const logger = createScopedLogger('FileTree');
 
 const NODE_PADDING_LEFT = 8;
@@ -109,9 +112,25 @@ export const FileTree = memo(
         return newSet;
       });
     };
+    const downloadZip = async () => {
+      const zip = new JSZip();
+
+      for (const [filePath, dirent] of Object.entries(files)) {
+        if (dirent.type === 'file') {
+          // Assuming `dirent.content` contains the file content
+          zip.file(filePath, dirent.content);
+        }
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, 'files.zip');
+    };
 
     return (
       <div className={classNames('text-sm', className)}>
+        <button onClick={downloadZip} className="mb-2 p-2 bg-blue-500 text-white rounded">
+          Download as ZIP
+        </button>
         {filteredFileList.map((fileOrFolder) => {
           switch (fileOrFolder.kind) {
             case 'file': {
